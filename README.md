@@ -1,12 +1,10 @@
 
-# AIR Data Explorer — v9.2 (OG image without JSX/React)
+# AIR Data Explorer — v10.2
+- Chips set to: **mental health | trans | black | asian**
+- Wide search input on desktop (440px)
+- Same interactive scatter, filters, dark hover, and OG endpoint as v10
 
-This version avoids React/JSX in Edge Functions to fix build errors.
-- `api/og.ts` uses plain element objects + `new ImageResponse(...)`
-- No `tsconfig.json` required
-- `@vercel/og` pinned to `^0.8.5`
-
-## Deploy
-- Import this repo in Vercel (Framework: Other). No build command.
-- Test OG at `/api/og`.
-- Optionally set absolute OG image URLs in `index.html` after first deploy.
+## Deploy (GitHub → Vercel)
+1) Push files to a repo.
+2) In Vercel: New Project → Import → Framework: **Other** → Deploy.
+3) Optional: set absolute OG URLs in `index.html` for Slack/Twitter unfurls.

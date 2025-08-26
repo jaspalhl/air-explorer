@@ -1,23 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
+<title>AIR Data Explorer: Authentic Inclusive Representation (Center for Scholars & Storytellers, 2025)</title>
 <meta property="og:title" content="AIR Data Explorer" />
 <meta property="og:description" content="Critics vs Audience • Film vs TV • Size = # of AIR raters." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="/api/og" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="AIR Data Explorer" />
 <meta name="twitter:description" content="Critics vs Audience • Film vs TV • Size = # of AIR raters." />
 <meta name="twitter:image" content="/api/og" />
-
-<title>AIR Data Explorer: Authentic Inclusive Representation (Center for Scholars & Storytellers, 2025)</title>
 <style>
   :root { --film: #1f77b4; --tv: #ff7f0e; }
   body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; background: #0f172a; color: #e5e7eb; }
@@ -25,10 +21,9 @@
   .subtitle a { color: #38bdf8; text-decoration: none; } .subtitle a:hover { text-decoration: underline; }
   .wrap { display: grid; grid-template-columns: 1fr; gap: 14px; }
   .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
-  /* Base controls: stack on small screens */
   .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: end; }
   label { font-size: 12px; color: #cbd5e1; display:block; margin-bottom: 6px; }
-  input[type="number"], select, input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: #e5e7eb; }
+  select, input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: #e5e7eb; }
   #plot { width: 100%; height: 760px; }
   .btn { padding: 12px 12px; border: 1px solid #334155; border-radius: 10px; background: #1f2937; color: #e5e7eb; cursor: pointer; width: 100%; }
   .btn:hover { background: #334155; }
@@ -38,19 +33,19 @@
   .sq { background: var(--film); border-radius: 2px; }
   .ci { background: var(--tv); border-radius: 999px; }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* Desktop: compact single row */
+  .hint { font-size: 12px; color: #9ca3af; margin-top: 6px; display:flex; gap:6px; flex-wrap: wrap; }
+  .chip { background:#0b1220; border:1px solid #334155; padding:4px 8px; border-radius:999px; cursor:pointer; }
+  .chip:hover { background:#162033; }
   @media (min-width: 1024px) {
     .controls { display: flex; flex-wrap: nowrap; gap: 16px; align-items: end; }
     .ctl { flex: 0 0 auto; }
-    .controls .ctl select, .controls .ctl input { width: auto; } /* override base 100% */
+    .controls .ctl select, .controls .ctl input { width: auto; }
     .ctl-type select { width: 160px; }
-    .ctl-age select { width: 200px; }
+    .ctl-age select { width: 220px; }
     .ctl-color select { width: 160px; }
-    .ctl-search input { width: 240px; }
+    .ctl-search input { width: 440px; }
     .ctl-actions { width: 220px; }
   }
-
   @media (max-width: 900px) {
     body { margin: 16px; }
     #plot { height: 70vh; }
@@ -99,8 +94,9 @@
         </select>
       </div>
       <div class="ctl ctl-search">
-        <label>Search title</label>
-        <input id="searchTitle" type="text" placeholder="e.g., Spider-Man"/>
+        <label>Search title or summary</label>
+        <input id="searchTitle" type="text" placeholder="Try: mental health · trans · black · asian"/>
+        <div id="searchChips" class="hint"></div>
       </div>
       <div class="ctl ctl-actions">
         <label>&nbsp;</label>
@@ -109,7 +105,7 @@
           <button id="downloadBtn" class="btn">Download PNG</button>
         </div>
       </div>
-      <div class="ctl" style="flex:1;"></div> <!-- spacer to keep one line without wrap -->
+      <div class="ctl" style="flex:1;"></div>
     </div>
 
     <div id="plot" class="card"></div>
@@ -117,30 +113,27 @@
 
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <script>
-    const DATA = [{"Title":"A Million Miles Away","Type":"Film","Studio":"Amazon Studios","AIR_Raters":3,"Summary":"Latino experience in STEM, supportive family dynamic","RT_Critic":89.0,"RT_Audience":94.0,"IMDb":7.3,"Metacritic":62.0,"Awards_Wins":5,"Awards_Noms":6,"title_lc":"a million miles away","summary_lc":"latino experience in stem, supportive family dynamic","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Abbott Elementary","Type":"TV","Studio":"ABC","AIR_Raters":4,"Summary":"Diverse female characters, caregiving, mental health, socioeconomic variety","RT_Critic":99.0,"RT_Audience":84.0,"IMDb":8.2,"Metacritic":83.0,"Awards_Wins":87,"Awards_Noms":253,"title_lc":"abbott elementary","summary_lc":"diverse female characters, caregiving, mental health, socioeconomic variety","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Accused","Type":"TV","Studio":"Fox","AIR_Raters":2,"Summary":"Portrayal of disabled surrogate by disabled actor","RT_Critic":100.0,"RT_Audience":null,"IMDb":7.0,"Metacritic":60.0,"Awards_Wins":1,"Awards_Noms":8,"title_lc":"accused","summary_lc":"portrayal of disabled surrogate by disabled actor","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"American Fiction","Type":"Film","Studio":"MGM","AIR_Raters":2,"Summary":"Satire & drama on Black caregiving, queer identity, cultural values","RT_Critic":93.0,"RT_Audience":96.0,"IMDb":7.5,"Metacritic":81.0,"Awards_Wins":63,"Awards_Noms":171,"title_lc":"american fiction","summary_lc":"satire & drama on black caregiving, queer identity, cultural values","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Beef","Type":"TV","Studio":"Netflix","AIR_Raters":4,"Summary":"Asian American identity, work-life conflict, parenting","RT_Critic":98.0,"RT_Audience":87.0,"IMDb":8.0,"Metacritic":86.0,"Awards_Wins":52,"Awards_Noms":59,"title_lc":"beef","summary_lc":"asian american identity, work-life conflict, parenting","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Bel-Air","Type":"TV","Studio":"NBCUniversal","AIR_Raters":2,"Summary":"Black identity, class, mental health, privilege, race","RT_Critic":85.0,"RT_Audience":74.0,"IMDb":6.4,"Metacritic":60.0,"Awards_Wins":23,"Awards_Noms":6,"title_lc":"bel-air","summary_lc":"black identity, class, mental health, privilege, race","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Black Cake","Type":"TV","Studio":"Hulu","AIR_Raters":2,"Summary":"Black Caribbean culture, family & community","RT_Critic":94.0,"RT_Audience":82.0,"IMDb":7.3,"Metacritic":68.0,"Awards_Wins":3,"Awards_Noms":9,"title_lc":"black cake","summary_lc":"black caribbean culture, family & community","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Blue Beetle","Type":"Film","Studio":"Warner Bros","AIR_Raters":3,"Summary":"Chicanx\/Latinx representation, family-oriented superhero","RT_Critic":77.0,"RT_Audience":91.0,"IMDb":5.9,"Metacritic":61.0,"Awards_Wins":3,"Awards_Noms":12,"title_lc":"blue beetle","summary_lc":"chicanx\/latinx representation, family-oriented superhero","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":true,"Age_Adults":false,"Primary_Age":"Early adults"},{"Title":"Bottoms","Type":"Film","Studio":"MGM","AIR_Raters":2,"Summary":"Queer identity with humor & boldness","RT_Critic":90.0,"RT_Audience":89.0,"IMDb":6.7,"Metacritic":74.0,"Awards_Wins":5,"Awards_Noms":24,"title_lc":"bottoms","summary_lc":"queer identity with humor & boldness","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Cassandro","Type":"Film","Studio":"Amazon Studios","AIR_Raters":2,"Summary":"Gay Mexican wrestler, queer identity in hyper-masculine setting","RT_Critic":91.0,"RT_Audience":74.0,"IMDb":6.5,"Metacritic":76.0,"Awards_Wins":2,"Awards_Noms":13,"title_lc":"cassandro","summary_lc":"gay mexican wrestler, queer identity in hyper-masculine setting","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Expats","Type":"TV","Studio":"Amazon Studios","AIR_Raters":4,"Summary":"Asian leads, domestic workers, gender expectations","RT_Critic":85.0,"RT_Audience":48.0,"IMDb":6.2,"Metacritic":73.0,"Awards_Wins":3,"Awards_Noms":16,"title_lc":"expats","summary_lc":"asian leads, domestic workers, gender expectations","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Flamin' Hot","Type":"Film","Studio":"Searchlight","AIR_Raters":4,"Summary":"Latinx family unity, resilience","RT_Critic":68.0,"RT_Audience":87.0,"IMDb":6.7,"Metacritic":58.0,"Awards_Wins":7,"Awards_Noms":8,"title_lc":"flamin' hot","summary_lc":"latinx family unity, resilience","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Girls State","Type":"Film","Studio":"Apple TV+","AIR_Raters":2,"Summary":"Young women advocating equity","RT_Critic":95.0,"RT_Audience":71.0,"IMDb":6.6,"Metacritic":77.0,"Awards_Wins":2,"Awards_Noms":8,"title_lc":"girls state","summary_lc":"young women advocating equity","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Good Omens","Type":"TV","Studio":"Amazon Studios","AIR_Raters":2,"Summary":"Disabled characters, accessibility theme","RT_Critic":88.0,"RT_Audience":95.0,"IMDb":7.9,"Metacritic":68.0,"Awards_Wins":8,"Awards_Noms":21,"title_lc":"good omens","summary_lc":"disabled characters, accessibility theme","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Gordita Chronicles","Type":"TV","Studio":"HBO Max","AIR_Raters":2,"Summary":"Immigrant pride, Latina girlhood","RT_Critic":100.0,"RT_Audience":83.0,"IMDb":7.5,"Metacritic":null,"Awards_Wins":1,"Awards_Noms":2,"title_lc":"gordita chronicles","summary_lc":"immigrant pride, latina girlhood","Age_Kids":true,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Kids"},{"Title":"Grey's Anatomy","Type":"TV","Studio":"ABC","AIR_Raters":4,"Summary":"Female leadership, caregiving, reproductive choices","RT_Critic":84.0,"RT_Audience":73.0,"IMDb":7.6,"Metacritic":64.0,"Awards_Wins":88,"Awards_Noms":257,"title_lc":"grey's anatomy","summary_lc":"female leadership, caregiving, reproductive choices","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Hacks","Type":"TV","Studio":"HBO Max","AIR_Raters":2,"Summary":"Older woman in entertainment, generational friendships","RT_Critic":99.0,"RT_Audience":90.0,"IMDb":8.2,"Metacritic":86.0,"Awards_Wins":83,"Awards_Noms":218,"title_lc":"hacks","summary_lc":"older woman in entertainment, generational friendships","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Heartbreak High","Type":"TV","Studio":"Netflix","AIR_Raters":2,"Summary":"Diversity in modern teenage life","RT_Critic":78.0,"RT_Audience":90.0,"IMDb":7.7,"Metacritic":null,"Awards_Wins":11,"Awards_Noms":25,"title_lc":"heartbreak high","summary_lc":"diversity in modern teenage life","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Insecure","Type":"TV","Studio":"HBO Max","AIR_Raters":4,"Summary":"Black culture, female friendships, caregiving","RT_Critic":97.0,"RT_Audience":82.0,"IMDb":8.1,"Metacritic":84.0,"Awards_Wins":46,"Awards_Noms":144,"title_lc":"insecure","summary_lc":"black culture, female friendships, caregiving","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Interview With The Vampire","Type":"TV","Studio":"AMC","AIR_Raters":2,"Summary":"Creole culture, queerness, systemic issues","RT_Critic":98.0,"RT_Audience":77.0,"IMDb":7.3,"Metacritic":83.0,"Awards_Wins":4,"Awards_Noms":43,"title_lc":"interview with the vampire","summary_lc":"creole culture, queerness, systemic issues","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Lopez vs. Lopez","Type":"TV","Studio":"NBCUniversal","AIR_Raters":4,"Summary":"Intergenerational family, race & gender intersections","RT_Critic":60.0,"RT_Audience":64.0,"IMDb":6.2,"Metacritic":51.0,"Awards_Wins":0,"Awards_Noms":6,"title_lc":"lopez vs. lopez","summary_lc":"intergenerational family, race & gender intersections","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Marvel's Echo","Type":"TV","Studio":"Disney","AIR_Raters":3,"Summary":"Native American female lead, Indigenous culture","RT_Critic":70.0,"RT_Audience":59.0,"IMDb":6.0,"Metacritic":62.0,"Awards_Wins":2,"Awards_Noms":4,"title_lc":"marvel's echo","summary_lc":"native american female lead, indigenous culture","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Monica","Type":"Film","Studio":"IFC Films","AIR_Raters":2,"Summary":"Caregiving, chronic illness","RT_Critic":84.0,"RT_Audience":97.0,"IMDb":6.4,"Metacritic":75.0,"Awards_Wins":5,"Awards_Noms":17,"title_lc":"monica","summary_lc":"caregiving, chronic illness","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Monkey Man","Type":"Film","Studio":"Netflix","AIR_Raters":2,"Summary":"Hindu mythology, South Asian masculinity, gender-diverse communities","RT_Critic":89.0,"RT_Audience":84.0,"IMDb":6.9,"Metacritic":70.0,"Awards_Wins":6,"Awards_Noms":13,"title_lc":"monkey man","summary_lc":"hindu mythology, south asian masculinity, gender-diverse communities","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Never Have I Ever","Type":"TV","Studio":"Netflix","AIR_Raters":2,"Summary":"Indian American adolescence, grief, growth","RT_Critic":93.0,"RT_Audience":86.0,"IMDb":7.8,"Metacritic":81.0,"Awards_Wins":8,"Awards_Noms":22,"title_lc":"never have i ever","summary_lc":"indian american adolescence, grief, growth","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Nyad","Type":"Film","Studio":"Netflix","AIR_Raters":2,"Summary":"Older queer women in sports narrative","RT_Critic":85.0,"RT_Audience":97.0,"IMDb":7.1,"Metacritic":63.0,"Awards_Wins":9,"Awards_Noms":37,"title_lc":"nyad","summary_lc":"older queer women in sports narrative","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Origin","Type":"Film","Studio":"ARRAY Filmworks","AIR_Raters":2,"Summary":"Caregiving, racial equity, male caregivers","RT_Critic":82.0,"RT_Audience":93.0,"IMDb":7.2,"Metacritic":75.0,"Awards_Wins":6,"Awards_Noms":30,"title_lc":"origin","summary_lc":"caregiving, racial equity, male caregivers","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Our Flag Means Death","Type":"TV","Studio":"HBO Max","AIR_Raters":2,"Summary":"No feedback","RT_Critic":95.0,"RT_Audience":96.0,"IMDb":7.8,"Metacritic":72.0,"Awards_Wins":3,"Awards_Noms":27,"title_lc":"our flag means death","summary_lc":"no feedback","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Past Lives","Type":"Film","Studio":"A24","AIR_Raters":2,"Summary":"Immigration, identity, love","RT_Critic":95.0,"RT_Audience":84.0,"IMDb":7.8,"Metacritic":94.0,"Awards_Wins":81,"Awards_Noms":232,"title_lc":"past lives","summary_lc":"immigration, identity, love","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Polite Society","Type":"Film","Studio":"Focus Features","AIR_Raters":3,"Summary":"Immigrant daughters with ambitions, supportive parents","RT_Critic":91.0,"RT_Audience":84.0,"IMDb":6.6,"Metacritic":75.0,"Awards_Wins":4,"Awards_Noms":22,"title_lc":"polite society","summary_lc":"immigrant daughters with ambitions, supportive parents","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Pose","Type":"TV","Studio":"FX","AIR_Raters":3,"Summary":"Trans & queer representation","RT_Critic":98.0,"RT_Audience":88.0,"IMDb":8.6,"Metacritic":76.0,"Awards_Wins":47,"Awards_Noms":142,"title_lc":"pose","summary_lc":"trans & queer representation","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Red, White & Royal Blue","Type":"Film","Studio":"Amazon Studios","AIR_Raters":2,"Summary":"Queer couple in political\/royal setting","RT_Critic":75.0,"RT_Audience":92.0,"IMDb":7.0,"Metacritic":62.0,"Awards_Wins":3,"Awards_Noms":9,"title_lc":"red, white & royal blue","summary_lc":"queer couple in political\/royal setting","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":true,"Age_Adults":false,"Primary_Age":"Early adults"},{"Title":"Rustin","Type":"Film","Studio":"Netflix","AIR_Raters":2,"Summary":"Civil rights hero Bayard Rustin, gay Black man","RT_Critic":84.0,"RT_Audience":83.0,"IMDb":6.5,"Metacritic":68.0,"Awards_Wins":13,"Awards_Noms":66,"title_lc":"rustin","summary_lc":"civil rights hero bayard rustin, gay black man","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Sex Education (S4)","Type":"TV","Studio":"Netflix","AIR_Raters":4,"Summary":"Diverse identities, disability, adolescent development","RT_Critic":94.0,"RT_Audience":78.0,"IMDb":8.2,"Metacritic":78.0,"Awards_Wins":21,"Awards_Noms":79,"title_lc":"sex education (s4)","summary_lc":"diverse identities, disability, adolescent development","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Shrinking","Type":"TV","Studio":"Apple TV+","AIR_Raters":3,"Summary":"Intergenerational friendships, caregiving","RT_Critic":91.0,"RT_Audience":87.0,"IMDb":8.0,"Metacritic":68.0,"Awards_Wins":6,"Awards_Noms":33,"title_lc":"shrinking","summary_lc":"intergenerational friendships, caregiving","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Sort Of","Type":"TV","Studio":"HBO Max","AIR_Raters":2,"Summary":"Nonbinary South Asian Muslim lead","RT_Critic":100.0,"RT_Audience":83.0,"IMDb":7.3,"Metacritic":null,"Awards_Wins":34,"Awards_Noms":71,"title_lc":"sort of","summary_lc":"nonbinary south asian muslim lead","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Spider-Man: Across the Spider-Verse","Type":"Film","Studio":"Sony Pictures","AIR_Raters":4,"Summary":"Latino & trans-coded characters, diverse heroes","RT_Critic":95.0,"RT_Audience":94.0,"IMDb":8.6,"Metacritic":86.0,"Awards_Wins":106,"Awards_Noms":164,"title_lc":"spider-man: across the spider-verse","summary_lc":"latino & trans-coded characters, diverse heroes","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"},{"Title":"Station 19","Type":"TV","Studio":"ABC","AIR_Raters":4,"Summary":"LGBTQ+ & interracial narratives, Black & Latine leadership","RT_Critic":null,"RT_Audience":93.0,"IMDb":7.0,"Metacritic":55.0,"Awards_Wins":10,"Awards_Noms":2,"title_lc":"station 19","summary_lc":"lgbtq+ & interracial narratives, black & latine leadership","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Still: A Michael J. Fox Movie","Type":"Film","Studio":"Apple TV+","AIR_Raters":2,"Summary":"Portrayal of Parkinson's, activism, disability stereotypes","RT_Critic":99.0,"RT_Audience":95.0,"IMDb":8.1,"Metacritic":78.0,"Awards_Wins":47,"Awards_Noms":40,"title_lc":"still: a michael j. fox movie","summary_lc":"portrayal of parkinson's, activism, disability stereotypes","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Taste The Nation","Type":"TV","Studio":"Hulu","AIR_Raters":2,"Summary":"Immigrant cultures through food","RT_Critic":null,"RT_Audience":null,"IMDb":8.1,"Metacritic":79.0,"Awards_Wins":1,"Awards_Noms":10,"title_lc":"taste the nation","summary_lc":"immigrant cultures through food","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"The Bear","Type":"TV","Studio":"FX","AIR_Raters":4,"Summary":"Portrayals of Black & Latin characters, mental health, women leaders","RT_Critic":96.0,"RT_Audience":79.0,"IMDb":8.6,"Metacritic":87.0,"Awards_Wins":110,"Awards_Noms":167,"title_lc":"the bear","summary_lc":"portrayals of black & latin characters, mental health, women leaders","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"The Cleaning Lady","Type":"TV","Studio":"Fox","AIR_Raters":2,"Summary":"Immigrant women balancing work\/home","RT_Critic":null,"RT_Audience":45.0,"IMDb":7.0,"Metacritic":53.0,"Awards_Wins":5,"Awards_Noms":11,"title_lc":"the cleaning lady","summary_lc":"immigrant women balancing work\/home","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"The Last of Us","Type":"TV","Studio":"HBO Max","AIR_Raters":6,"Summary":"Queer romance, disability, caregiving in apocalypse","RT_Critic":96.0,"RT_Audience":88.0,"IMDb":8.7,"Metacritic":84.0,"Awards_Wins":92,"Awards_Noms":131,"title_lc":"the last of us","summary_lc":"queer romance, disability, caregiving in apocalypse","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"The Umbrella Academy","Type":"TV","Studio":"Netflix","AIR_Raters":5,"Summary":"Queer & trans representation, mental health","RT_Critic":80.0,"RT_Audience":61.0,"IMDb":7.9,"Metacritic":64.0,"Awards_Wins":13,"Awards_Noms":62,"title_lc":"the umbrella academy","summary_lc":"queer & trans representation, mental health","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"Warrior","Type":"TV","Studio":"HBO Max","AIR_Raters":2,"Summary":"Period storytelling, martial arts","RT_Critic":93.0,"RT_Audience":96.0,"IMDb":8.4,"Metacritic":72.0,"Awards_Wins":1,"Awards_Noms":12,"title_lc":"warrior","summary_lc":"period storytelling, martial arts","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"What We Do In The Shadows","Type":"TV","Studio":"FX","AIR_Raters":5,"Summary":"Intersectional characters, evolving identities","RT_Critic":96.0,"RT_Audience":87.0,"IMDb":8.6,"Metacritic":83.0,"Awards_Wins":25,"Awards_Noms":196,"title_lc":"what we do in the shadows","summary_lc":"intersectional characters, evolving identities","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":false,"Age_Adults":true,"Primary_Age":"Adults"},{"Title":"With Love","Type":"TV","Studio":"Amazon Studios","AIR_Raters":3,"Summary":"Latinx culture, queer identity","RT_Critic":100.0,"RT_Audience":80.0,"IMDb":7.2,"Metacritic":75.0,"Awards_Wins":0,"Awards_Noms":7,"title_lc":"with love","summary_lc":"latinx culture, queer identity","Age_Kids":false,"Age_Teens":false,"Age_EarlyAdults":true,"Age_Adults":false,"Primary_Age":"Early adults"},{"Title":"XO, Kitty","Type":"TV","Studio":"Netflix","AIR_Raters":3,"Summary":"Asian American identity, queer coming-of-age","RT_Critic":81.0,"RT_Audience":56.0,"IMDb":6.5,"Metacritic":68.0,"Awards_Wins":1,"Awards_Noms":3,"title_lc":"xo, kitty","summary_lc":"asian american identity, queer coming-of-age","Age_Kids":false,"Age_Teens":true,"Age_EarlyAdults":false,"Age_Adults":false,"Primary_Age":"Teens"}];
+    const DATA = [{"Title": "A Million Miles Away", "Type": "Film", "Studio": "Amazon Studios", "AIR_Raters": 3, "Summary": "Highlights the Latino experience in STEM and portrays a healthy, supportive family dynamic.", "RT_Critic": 89, "RT_Audience": 94, "IMDb": 7.3, "Metacritic": 62, "Awards_Wins": 5, "Awards_Noms": 6, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Abbott Elementary", "Type": "TV", "Studio": "ABC", "AIR_Raters": 4, "Summary": "Celebrates diverse female characters, authentic portrayals of caregiving and mental health, and features a rich variety of socioeconomic backgrounds.", "RT_Critic": 99, "RT_Audience": 84, "IMDb": 8.2, "Metacritic": 83, "Awards_Wins": 87, "Awards_Noms": 253, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Accused", "Type": "TV", "Studio": "Fox", "AIR_Raters": 2, "Summary": "Features a rare portrayal of a disabled surrogate played by a disabled actor, challenging societal assumptions about disability with depth and empathy.", "RT_Critic": 100, "RT_Audience": null, "IMDb": 7.0, "Metacritic": 60, "Awards_Wins": 1, "Awards_Noms": 8, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "American Fiction", "Type": "Film", "Studio": "MGM", "AIR_Raters": 2, "Summary": "Blends satire and drama to highlight nuanced portrayals of Black family caregiving, queer identity, and cultural values with authenticity and emotional resonance.", "RT_Critic": 93, "RT_Audience": 96, "IMDb": 7.5, "Metacritic": 81, "Awards_Wins": 63, "Awards_Noms": 171, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Beef", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 4, "Summary": "Stands out for its nuanced portrayal of Asian American identity, work-life conflict, and emotional complexity, especially around parenting and professional pressure.", "RT_Critic": 98, "RT_Audience": 87, "IMDb": 8.0, "Metacritic": 86, "Awards_Wins": 52, "Awards_Noms": 59, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Bel-Air", "Type": "TV", "Studio": "NBCUniversal", "AIR_Raters": 2, "Summary": "Offers a nuanced and emotionally rich portrayal of Black identity, class, and mental health by centering complex, multidimensional Black characters whose intersecting struggles with privilege, race, and substance use are depicted with empathy, depth, and cultural specificity.", "RT_Critic": 85, "RT_Audience": 74, "IMDb": 6.4, "Metacritic": 60, "Awards_Wins": 23, "Awards_Noms": 6, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Black Cake", "Type": "TV", "Studio": "Hulu", "AIR_Raters": 2, "Summary": "Excellent depiction of Black Caribbean culture, showing depth and nuance in family and community dynamics.", "RT_Critic": 94, "RT_Audience": 82, "IMDb": 7.3, "Metacritic": 68, "Awards_Wins": 3, "Awards_Noms": 9, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Blue Beetle", "Type": "Film", "Studio": "Warner Bros", "AIR_Raters": 3, "Summary": "Culturally rich and family-oriented superhero film that authentically represents Chicanx/Latinx life and empowers female characters.", "RT_Critic": 77, "RT_Audience": 91, "IMDb": 5.9, "Metacritic": 61, "Awards_Wins": 3, "Awards_Noms": 12, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": true, "Age_Adults": false, "Primary_Age": "Early adults"}, {"Title": "Bottoms", "Type": "Film", "Studio": "MGM", "AIR_Raters": 2, "Summary": "Celebrates queer identity with humor and boldness, letting young lesbian characters lead in a genre typically dominated by straight stories.", "RT_Critic": 90, "RT_Audience": 89, "IMDb": 6.7, "Metacritic": 74, "Awards_Wins": 5, "Awards_Noms": 24, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Cassandro", "Type": "Film", "Studio": "Amazon Studios", "AIR_Raters": 2, "Summary": "Powerfully portrays the real-life story of a gay Mexican wrestler, celebrating queer identity, resilience, and representation in a hyper-masculine setting.", "RT_Critic": 91, "RT_Audience": 74, "IMDb": 6.5, "Metacritic": 76, "Awards_Wins": 2, "Awards_Noms": 13, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Expats", "Type": "TV", "Studio": "Amazon Studios", "AIR_Raters": 4, "Summary": "Commended for casting Asian leads and giving complex, humanizing portrayals of domestic workers, while exploring gender expectations and emotional well-being.", "RT_Critic": 85, "RT_Audience": 48, "IMDb": 6.2, "Metacritic": 73, "Awards_Wins": 3, "Awards_Noms": 16, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Flamin' Hot", "Type": "Film", "Studio": "Searchlight", "AIR_Raters": 4, "Summary": "Celebrates Latinx family unity and innovation, spotlighting a true story of resilience and cultural pride in the face of economic hardship.", "RT_Critic": 68, "RT_Audience": 87, "IMDb": 6.7, "Metacritic": 58, "Awards_Wins": 7, "Awards_Noms": 8, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Girls State", "Type": "Film", "Studio": "Apple TV+", "AIR_Raters": 2, "Summary": "Uplifting documentary that shows young women empowering each other, advocating for equity, and engaging in tough social conversations with maturity.", "RT_Critic": 95, "RT_Audience": 71, "IMDb": 6.6, "Metacritic": 77, "Awards_Wins": 2, "Awards_Noms": 8, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Good Omens", "Type": "TV", "Studio": "Amazon Studios", "AIR_Raters": 2, "Summary": "Showcases disabled characters with creativity and dignity, featuring accessibility as a key theme woven into a fantastical narrative.", "RT_Critic": 88, "RT_Audience": 95, "IMDb": 7.9, "Metacritic": 68, "Awards_Wins": 8, "Awards_Noms": 21, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Gordita Chronicles", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 2, "Summary": "Celebrates immigrant pride and Latina girlhood with heart and humor, offering a bold and joyful addition to coming-of-age immigrant stories.", "RT_Critic": 100, "RT_Audience": 83, "IMDb": 7.5, "Metacritic": null, "Awards_Wins": 1, "Awards_Noms": 2, "Age_Kids": true, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Kids"}, {"Title": "Grey's Anatomy", "Type": "TV", "Studio": "ABC", "AIR_Raters": 4, "Summary": "Strong female leadership across racial and ethnic lines, authentic depictions of caregiving, reproductive choices, and inclusive family dynamics.", "RT_Critic": 84, "RT_Audience": 73, "IMDb": 7.6, "Metacritic": 64, "Awards_Wins": 88, "Awards_Noms": 257, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Hacks", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 2, "Summary": "Centers on a vibrant older woman navigating career and relationships, while exploring generational female friendship and challenges of aging in entertainment.", "RT_Critic": 99, "RT_Audience": 90, "IMDb": 8.2, "Metacritic": 86, "Awards_Wins": 83, "Awards_Noms": 218, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Heartbreak High", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 2, "Summary": "Authentic, natural integration of diversity that reflects the realities of modern teenage life in a refreshingly real school environment.", "RT_Critic": 78, "RT_Audience": 90, "IMDb": 7.7, "Metacritic": null, "Awards_Wins": 11, "Awards_Noms": 25, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Insecure", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 4, "Summary": "Inclusive portrayal of Black culture, with complex female friendships, family caregiving stories, and groundbreaking interracial relationship dynamics.", "RT_Critic": 97, "RT_Audience": 82, "IMDb": 8.1, "Metacritic": 84, "Awards_Wins": 46, "Awards_Noms": 144, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Interview With The Vampire", "Type": "TV", "Studio": "AMC", "AIR_Raters": 2, "Summary": "Provides a richly diverse cast and explores Creole culture, queerness, and systemic issues through an emotionally layered and visually striking narrative.", "RT_Critic": 98, "RT_Audience": 77, "IMDb": 7.3, "Metacritic": 83, "Awards_Wins": 4, "Awards_Noms": 43, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Lopez vs. Lopez", "Type": "TV", "Studio": "NBCUniversal", "AIR_Raters": 4, "Summary": "Centers on intergenerational family life and showcases racial and gender intersections with humor, authenticity, and evolving cultural conversations.", "RT_Critic": 60, "RT_Audience": 64, "IMDb": 6.2, "Metacritic": 51, "Awards_Wins": 0, "Awards_Noms": 6, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Marvel's Echo", "Type": "TV", "Studio": "Disney", "AIR_Raters": 3, "Summary": "Puts a Native American female lead front and center while celebrating Indigenous culture in a genre where such representation is rare.", "RT_Critic": 70, "RT_Audience": 59, "IMDb": 6.0, "Metacritic": 62, "Awards_Wins": 2, "Awards_Noms": 4, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Monica", "Type": "Film", "Studio": "IFC Films", "AIR_Raters": 2, "Summary": "Highlights inclusive in-home caregiving with emotional sensitivity, portraying care circles and chronic illness in a non-medicalized, human way.", "RT_Critic": 84, "RT_Audience": 97, "IMDb": 6.4, "Metacritic": 75, "Awards_Wins": 5, "Awards_Noms": 17, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Monkey Man", "Type": "Film", "Studio": "Netflix", "AIR_Raters": 2, "Summary": "Engages Hindu mythology and Indian sociopolitics, while portraying South Asian masculinity and gender-diverse communities in empowering ways.", "RT_Critic": 89, "RT_Audience": 84, "IMDb": 6.9, "Metacritic": 70, "Awards_Wins": 6, "Awards_Noms": 13, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Never Have I Ever", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 2, "Summary": "A heartfelt and funny depiction of Indian American adolescence, grief, friendship, and personal growth, breaking stereotypes around Asian representation.", "RT_Critic": 93, "RT_Audience": 86, "IMDb": 7.8, "Metacritic": 81, "Awards_Wins": 8, "Awards_Noms": 22, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Nyad", "Type": "Film", "Studio": "Netflix", "AIR_Raters": 2, "Summary": "Centers on older queer women in a powerful sports narrative, celebrating athleticism, friendship, and defiance of age and gender-based norms.", "RT_Critic": 85, "RT_Audience": 97, "IMDb": 7.1, "Metacritic": 63, "Awards_Wins": 9, "Awards_Noms": 37, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Origin", "Type": "Film", "Studio": "ARRAY Filmworks", "AIR_Raters": 2, "Summary": "Richly integrates themes of caregiving and racial equity, portraying hands-on male caregivers and intersectional challenges with depth and cultural accuracy.", "RT_Critic": 82, "RT_Audience": 93, "IMDb": 7.2, "Metacritic": 75, "Awards_Wins": 6, "Awards_Noms": 30, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Our Flag Means Death", "Type": "TV", "Studio": "HBO Max 2 No qualitative feedback available. 95% 96% 7.8 72 3 27 Past Lives Film A24", "AIR_Raters": 2, "Summary": "Poignantly explores immigration, identity, and love with a strong Asian female lead who pursues her professional dreams and cultural reconciliation.", "RT_Critic": 95, "RT_Audience": 84, "IMDb": 7.8, "Metacritic": 94, "Awards_Wins": 81, "Awards_Noms": 232, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "", "Type": "Film", "Studio": "A24", "AIR_Raters": 2, "Summary": "Poignantly explores immigration, identity, and love with a strong Asian female lead who pursues her professional dreams and cultural reconciliation.", "RT_Critic": 95, "RT_Audience": 84, "IMDb": 7.8, "Metacritic": 94, "Awards_Wins": 81, "Awards_Noms": 232, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Polite Society", "Type": "Film", "Studio": "Focus Features", "AIR_Raters": 3, "Summary": "Uplifting portrayal of immigrant daughters with creative ambitions, showcasing supportive parent-child dynamics and avoiding typical cultural conflict tropes.", "RT_Critic": 91, "RT_Audience": 84, "IMDb": 6.6, "Metacritic": 75, "Awards_Wins": 4, "Awards_Noms": 22, "Age_Kids": true, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Kids"}, {"Title": "Pose", "Type": "TV", "Studio": "FX", "AIR_Raters": 3, "Summary": "Revolutionary in its trans and queer representation, especially of Black and Brown trans women, with empowering storytelling rooted in authenticity.", "RT_Critic": 98, "RT_Audience": 88, "IMDb": 8.6, "Metacritic": 76, "Awards_Wins": 47, "Awards_Noms": 142, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Red, White & Royal Blue", "Type": "Film", "Studio": "Amazon Studios", "AIR_Raters": 2, "Summary": "Romantic comedy that centers a queer couple in a political and royal setting, highlighting intimacy, identity, and acceptance without trauma framing.", "RT_Critic": 75, "RT_Audience": 92, "IMDb": 7.0, "Metacritic": 62, "Awards_Wins": 3, "Awards_Noms": 9, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": true, "Age_Adults": false, "Primary_Age": "Early adults"}, {"Title": "Rustin", "Type": "Film", "Studio": "Netflix", "AIR_Raters": 2, "Summary": "Shines overdue light on civil rights hero Bayard Rustin, celebrating his identity as a proud, gay Black man and his overlooked contributions to history.", "RT_Critic": 84, "RT_Audience": 83, "IMDb": 6.5, "Metacritic": 68, "Awards_Wins": 13, "Awards_Noms": 66, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Sex Education (Season 4)", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 4, "Summary": "Celebrates diverse identities, thoughtful disability representation, and nuanced portrayals of mental health and adolescent development.", "RT_Critic": 94, "RT_Audience": 78, "IMDb": 8.2, "Metacritic": 78, "Awards_Wins": 21, "Awards_Noms": 79, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Shrinking", "Type": "TV", "Studio": "Apple TV+", "AIR_Raters": 3, "Summary": "Features intergenerational friendships, strong Black female leads, and authentic conversations about caregiving, aging, and personal reinvention.", "RT_Critic": 91, "RT_Audience": 87, "IMDb": 8.0, "Metacritic": 68, "Awards_Wins": 6, "Awards_Noms": 33, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Sort Of", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 2, "Summary": "Groundbreaking for centering a nonbinary South Asian Muslim lead, with thoughtful depictions of mental health, identity, and intersectionality.", "RT_Critic": 100, "RT_Audience": 83, "IMDb": 7.3, "Metacritic": null, "Awards_Wins": 34, "Awards_Noms": 71, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Spider-Man: Across the Spider-Verse", "Type": "Film", "Studio": "Sony Pictures", "AIR_Raters": 4, "Summary": "A landmark in representation, featuring strong Latino and trans-coded characters, diverse heroes, and empowering messages about identity and inclusion.", "RT_Critic": 95, "RT_Audience": 94, "IMDb": 8.6, "Metacritic": 86, "Awards_Wins": 106, "Awards_Noms": 164, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}, {"Title": "Station 19", "Type": "TV", "Studio": "ABC", "AIR_Raters": 4, "Summary": "Featured LGBTQ+ and interracial family narratives, Black and Latine women in leadership, Korean American representation, and honest portrayals of race, gender, and mental health.", "RT_Critic": null, "RT_Audience": 93, "IMDb": 7.0, "Metacritic": 55, "Awards_Wins": 10, "Awards_Noms": 2, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Still: A Michael J. Fox Movie", "Type": "Film", "Studio": "Apple TV+", "AIR_Raters": 2, "Summary": "Authentic, humorous, and humanizing portrayal of living with Parkinson’s, celebrating Fox’s activism and dismantling disability stereotypes.", "RT_Critic": 99, "RT_Audience": 95, "IMDb": 8.1, "Metacritic": 78, "Awards_Wins": 47, "Awards_Noms": 40, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Taste The Nation with Padma Lakshmi", "Type": "TV", "Studio": "Hulu", "AIR_Raters": 2, "Summary": "Richly educates viewers on immigrant cultures through food, offering in-depth looks at community resilience and underrepresented histories.", "RT_Critic": null, "RT_Audience": null, "IMDb": 8.1, "Metacritic": 79, "Awards_Wins": 1, "Awards_Noms": 10, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "The Bear", "Type": "TV", "Studio": "FX", "AIR_Raters": 4, "Summary": "Emotionally complex show with standout portrayals of Black and Latin characters, mental health, caregiving, and women in culinary leadership.", "RT_Critic": 96, "RT_Audience": 79, "IMDb": 8.6, "Metacritic": 87, "Awards_Wins": 110, "Awards_Noms": 167, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "The Cleaning Lady", "Type": "TV", "Studio": "Fox", "AIR_Raters": 2, "Summary": "Shows resourceful immigrant women as leads, balancing work and home life with strength, intelligence, and emotional nuance.", "RT_Critic": null, "RT_Audience": 45, "IMDb": 7.0, "Metacritic": 53, "Awards_Wins": 5, "Awards_Noms": 11, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "The Last of Us", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 6, "Summary": "Includes rare and meaningful representations of queer romance, disability, and family caregiving in a post-apocalyptic setting.", "RT_Critic": 96, "RT_Audience": 88, "IMDb": 8.7, "Metacritic": 84, "Awards_Wins": 92, "Awards_Noms": 131, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "The Umbrella Academy", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 5, "Summary": "Pushes the boundaries of queer and trans representation in a genre show, with layered character development and mental health themes.", "RT_Critic": 80, "RT_Audience": 61, "IMDb": 7.9, "Metacritic": 64, "Awards_Wins": 13, "Awards_Noms": 62, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "Warrior", "Type": "TV", "Studio": "HBO Max", "AIR_Raters": 2, "Summary": "Delivers nuanced period storytelling with layered characters, grounded in cultural depth and martial arts excellence.", "RT_Critic": 93, "RT_Audience": 96, "IMDb": 8.4, "Metacritic": 72, "Awards_Wins": 1, "Awards_Noms": 12, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "What We Do In The Shadows", "Type": "TV", "Studio": "FX", "AIR_Raters": 5, "Summary": "Features diverse and intersectional characters with rich backstories and evolving identities, subverting stereotypes in hilarious ways.", "RT_Critic": 96, "RT_Audience": 87, "IMDb": 8.6, "Metacritic": 83, "Awards_Wins": 25, "Awards_Noms": 196, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": false, "Age_Adults": true, "Primary_Age": "Adults"}, {"Title": "With Love", "Type": "TV", "Studio": "Amazon Studios", "AIR_Raters": 3, "Summary": "Offers warm, layered depictions of Latinx culture and queer identity, with multidimensional characters navigating love and family.", "RT_Critic": 100, "RT_Audience": 80, "IMDb": 7.2, "Metacritic": 75, "Awards_Wins": 0, "Awards_Noms": 7, "Age_Kids": false, "Age_Teens": false, "Age_EarlyAdults": true, "Age_Adults": false, "Primary_Age": "Early adults"}, {"Title": "XO, Kitty", "Type": "TV", "Studio": "Netflix", "AIR_Raters": 3, "Summary": "Centers Asian American identity and queer coming-of-age in a Korean setting, blending cultural exploration with teenage self-discovery.", "RT_Critic": 81, "RT_Audience": 56, "IMDb": 6.5, "Metacritic": 68, "Awards_Wins": 1, "Awards_Noms": 3, "Age_Kids": false, "Age_Teens": true, "Age_EarlyAdults": false, "Age_Adults": false, "Primary_Age": "Teens"}];
+    const SUGGESTIONS = ["mental health", "trans", "black", "asian"];
 
-    function getSelectedTypes() {
-      const sel = document.getElementById('typeFilter');
-      return Array.from(sel.selectedOptions).map(o => o.value);
-    }
-    function getSelectedAges() {
-      const sel = document.getElementById('ageFilter');
-      return Array.from(sel.selectedOptions).map(o => o.value);
-    }
+    function getSelectedTypes() { const sel = document.getElementById('typeFilter'); return Array.from(sel.selectedOptions).map(o => o.value); }
+    function getSelectedAges() { const sel = document.getElementById('ageFilter'); return Array.from(sel.selectedOptions).map(o => o.value); }
 
-    function filterData() {
-      const types = getSelectedTypes();
+    function filterData() { 
+      const types = getSelectedTypes(); 
       const ages = getSelectedAges();
       return DATA.filter(d => {
         const typeOk = types.length ? types.includes(d.Type) : true;
-        const ageOk = ages.length
-          ? ( (ages.includes('Kids') && d.Age_Kids) ||
-              (ages.includes('Teens') && d.Age_Teens) ||
-              (ages.includes('Early adults') && d.Age_EarlyAdults) ||
-              (ages.includes('Adults') && d.Age_Adults) )
-          : true;
+        const ageOk = ages.length ? ((ages.includes('Kids') && d.Age_Kids) || (ages.includes('Teens') && d.Age_Teens) || (ages.includes('Early adults') && d.Age_EarlyAdults) || (ages.includes('Adults') && d.Age_Adults)) : true;
         return typeOk && ageOk;
       });
+    }
+
+    function hitsQuery(d, q) {
+      if (!q) return false;
+      const s = q.toLowerCase().trim();
+      if (!s) return false;
+      return (d.Title || '').toLowerCase().includes(s) || (d.Summary || '').toLowerCase().includes(s);
     }
 
     function symbolFor(type) { return type === 'Film' ? 'square' : 'circle'; }
@@ -150,11 +143,10 @@
       if (key === 'Type') {
         const film = getComputedStyle(document.documentElement).getPropertyValue('--film').trim();
         const tv = getComputedStyle(document.documentElement).getPropertyValue('--tv').trim();
-        const colors = rows.map(d => d.Type === 'Film' ? film : tv);
-        return {marker: {color: colors}, showscale: false};
+        return { marker: { color: rows.map(d => d.Type === 'Film' ? film : tv) }, showscale: false };
       } else {
         const arr = rows.map(d => d[key] ?? null);
-        return {marker: {color: arr, colorscale: 'Viridis', showscale: true, colorbar: {title: key}}};
+        return { marker: { color: arr, colorscale: 'Viridis', showscale: true, colorbar: { title: key } } };
       }
     }
 
@@ -164,44 +156,31 @@
       let lines = []; let cur = ''; let i = 0;
       while (i < words.length) {
         const w = words[i];
-        if ((cur + ' ' + w).trim().length <= maxCharsPerLine) {
-          cur = (cur ? cur + ' ' : '') + w; i++;
-        } else {
-          lines.push(cur); cur = w; i++;
-          if (lines.length >= maxLines - 1) break;
-        }
+        if ((cur + ' ' + w).trim().length <= maxCharsPerLine) { cur = (cur ? cur + ' ' : '') + w; i++; }
+        else { lines.push(cur); cur = w; i++; if (lines.length >= maxLines - 1) break; }
       }
       const remaining = words.slice(i).join(' ');
-      let last = cur + (remaining ? '…' : '');
-      lines.push(last);
+      lines.push(cur + (remaining ? '…' : ''));
       return lines.slice(0, maxLines).join('<br>');
     }
 
-    function buildTrace(rows) {
-      const showLabels = document.getElementById('showLabels').checked;
-      const textArr = rows.map(d => d.Title);
-      let text = new Array(rows.length).fill('');
-      if (showLabels) {
-        text = textArr;
-      }
+    function baseTrace(rows, q) {
       const colorCfg = colorConfig(rows);
-      const markerBase = {
-        size: rows.map(d => (d.AIR_Raters||0) * 6 + 10),
-        symbol: rows.map(d => symbolFor(d.Type)),
-        line: {width: 0.8, color: 'rgba(255,255,255,0.6)'},
-        opacity: 0.95
-      };
-      const marker = Object.assign(markerBase, colorCfg.marker || {});
-
+      const opacity = q ? 0.35 : 0.95;
       return {
         x: rows.map(d => d.RT_Audience),
         y: rows.map(d => d.RT_Critic),
-        mode: showLabels ? 'markers+text' : 'markers',
-        text: text,
+        mode: document.getElementById('showLabels').checked ? 'markers+text' : 'markers',
+        text: document.getElementById('showLabels').checked ? rows.map(d => d.Title) : undefined,
         textposition: 'top center',
-        textfont: {size: 11, color: '#e5e7eb'},
+        textfont: { size: 11, color: '#e5e7eb' },
         cliponaxis: false,
-        marker: marker,
+        marker: Object.assign({
+          size: rows.map(d => (d.AIR_Raters||0) * 6 + 10),
+          symbol: rows.map(d => symbolFor(d.Type)),
+          line: { width: 0.8, color: 'rgba(255,255,255,0.6)' },
+          opacity: opacity
+        }, colorCfg.marker || {}),
         hovertemplate:
           '<b>%{customdata[0]}</b><br>' +
           'Type: %{customdata[1]} | Primary age: %{customdata[8]}<br>' +
@@ -210,17 +189,13 @@
           'IMDb: %{customdata[3]} | Metacritic: %{customdata[4]}<br>' +
           'Awards (W/N): %{customdata[5]}/%{customdata[6]}<br>' +
           'Summary:<br>%{customdata[7]}<extra></extra>',
-        customdata: rows.map(d => [
-          d.Title, d.Type, d.AIR_Raters, d.IMDb, d.Metacritic, d.Awards_Wins, d.Awards_Noms,
-          wrapText(d.Summary, 48, 4), d.Primary_Age
-        ])
+        customdata: rows.map(d => [d.Title, d.Type, d.AIR_Raters, d.IMDb, d.Metacritic, d.Awards_Wins, d.Awards_Noms, wrapText(d.Summary, 48, 4), d.Primary_Age])
       };
     }
 
-    function buildHighlightTrace(rows, query) {
-      if (!query) return null;
-      const q = query.toLowerCase().trim();
-      const hits = rows.filter(d => d.Title.toLowerCase().includes(q));
+    function highlightTrace(rows, q) {
+      if (!q) return null;
+      const hits = rows.filter(d => hitsQuery(d, q));
       if (!hits.length) return null;
       return {
         x: hits.map(d => d.RT_Audience),
@@ -228,12 +203,12 @@
         mode: 'markers+text',
         text: hits.map(d => '★ ' + d.Title),
         textposition: 'top center',
-        textfont: {size: 13, color: '#e5e7eb'},
+        textfont: { size: 13, color: '#e5e7eb' },
         cliponaxis: false,
         marker: {
           size: hits.map(d => (d.AIR_Raters||0) * 8 + 20),
           symbol: hits.map(d => d.Type === 'Film' ? 'square' : 'circle'),
-          line: {width: 2, color: '#f8fafc'},
+          line: { width: 2, color: '#f8fafc' },
           color: '#d62728',
           opacity: 1.0
         },
@@ -245,23 +220,20 @@
           'IMDb: %{customdata[3]} | Metacritic: %{customdata[4]}<br>' +
           'Awards (W/N): %{customdata[5]}/%{customdata[6]}<br>' +
           'Summary:<br>%{customdata[7]}<extra></extra>',
-        customdata: hits.map(d => [
-          d.Title, d.Type, d.AIR_Raters, d.IMDb, d.Metacritic, d.Awards_Wins, d.Awards_Noms,
-          wrapText(d.Summary, 48, 4), d.Primary_Age
-        ])
+        customdata: hits.map(d => [d.Title, d.Type, d.AIR_Raters, d.IMDb, d.Metacritic, d.Awards_Wins, d.Awards_Noms, wrapText(d.Summary, 48, 4), d.Primary_Age])
       };
     }
 
     function draw() {
       const rows = filterData();
-      const base = buildTrace(rows);
-      const highlight = buildHighlightTrace(rows, document.getElementById('searchTitle').value);
-      const data = highlight ? [base, highlight] : [base];
-
+      const q = document.getElementById('searchTitle').value;
+      const traces = [baseTrace(rows, q)];
+      const hi = highlightTrace(rows, q);
+      if (hi) traces.push(hi);
       const layout = {
-        xaxis: {title: 'Audience (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937'},
-        yaxis: {title: 'Critics (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937'},
-        margin: {l: 80, r: 60, t: 30, b: 60},
+        xaxis: { title: 'Audience (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937' },
+        yaxis: { title: 'Critics (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937' },
+        margin: { l: 80, r: 60, t: 30, b: 60 },
         paper_bgcolor: '#111827',
         plot_bgcolor: '#111827',
         shapes: [
@@ -271,19 +243,16 @@
         showlegend: false,
         hoverlabel: {
           align: 'left',
-          font: {family: 'ui-monospace, SFMono-Regular, Menlo, monospace', size: 13, color: '#F8FAFC'},
+          font: { family: 'ui-monospace, SFMono-Regular, Menlo, monospace', size: 13, color: '#F8FAFC' },
           bgcolor: 'rgba(17,24,39,0.98)',
           bordercolor: '#0ea5e9'
         }
       };
-      Plotly.react('plot', data, layout, {responsive: true, displayModeBar: false});
+      Plotly.react('plot', traces, layout, { responsive: true, displayModeBar: false });
     }
 
     function resetAll() {
-      for (const selId of ['typeFilter','ageFilter']) {
-        const sel = document.getElementById(selId);
-        for (const opt of sel.options) opt.selected = true;
-      }
+      for (const selId of ['typeFilter','ageFilter']) { const sel = document.getElementById(selId); for (const opt of sel.options) opt.selected = true; }
       document.getElementById('showLabels').checked = true;
       document.getElementById('colorBy').value = 'Type';
       document.getElementById('searchTitle').value = '';
@@ -292,29 +261,38 @@
 
     function downloadPng() {
       const node = document.getElementById('plot');
-      Plotly.toImage(node, {format: 'png', width: 1400, height: 900, scale: 2}).then(function(dataUrl) {
+      Plotly.toImage(node, { format: 'png', width: 1400, height: 900, scale: 2 }).then(function(dataUrl) {
         const a = document.createElement('a');
         a.href = dataUrl;
         a.download = 'AIR_quadrant.png';
         document.body.appendChild(a);
-        a.click();
-        a.remove();
+        a.click(); a.remove();
+      });
+    }
+
+    function mountChips() {
+      const el = document.getElementById('searchChips');
+      el.innerHTML = '';
+      SUGGESTIONS.forEach(s => {
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.textContent = s;
+        chip.title = 'Click to search';
+        chip.onclick = () => { document.getElementById('searchTitle').value = s; draw(); };
+        el.appendChild(chip);
       });
     }
 
     // init
+    mountChips();
     resetAll();
-    if (window.innerWidth < 640) {
-      const show = document.getElementById('showLabels');
-      if (show) show.checked = false;
-      draw();
-    }
+    if (window.innerWidth < 640) { const show = document.getElementById('showLabels'); if (show) show.checked = false; draw(); }
 
     // bind
-    for (const id of ['typeFilter','ageFilter','showLabels','colorBy','searchTitle']) {
+    ;['typeFilter','ageFilter','showLabels','colorBy','searchTitle'].forEach(id => {
       document.getElementById(id).addEventListener('input', draw);
       document.getElementById(id).addEventListener('change', draw);
-    }
+    });
     document.getElementById('resetBtn').addEventListener('click', function(e){ e.preventDefault(); resetAll(); });
     document.getElementById('downloadBtn').addEventListener('click', function(e){ e.preventDefault(); downloadPng(); });
   </script>
