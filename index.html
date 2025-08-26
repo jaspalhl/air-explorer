@@ -4,26 +4,63 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<meta property="og:title" content="AIR Data Explorer" />
+<meta property="og:description" content="Critics vs Audience • Film vs TV • Size = # of AIR raters." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="/api/og" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AIR Data Explorer" />
+<meta name="twitter:description" content="Critics vs Audience • Film vs TV • Size = # of AIR raters." />
+<meta name="twitter:image" content="/api/og" />
+
 <title>AIR Data Explorer: Authentic Inclusive Representation (Center for Scholars & Storytellers, 2025)</title>
 <style>
   :root { --film: #1f77b4; --tv: #ff7f0e; }
-  body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; background: #f9fafb; color: #111827; }
+  body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; background: #0f172a; color: #e5e7eb; }
   h2 { margin: 0 0 8px 0; font-weight: 700; letter-spacing: 0.2px; }
-  .subtitle a { color: #2563eb; text-decoration: none; } .subtitle a:hover { text-decoration: underline; }
+  .subtitle a { color: #38bdf8; text-decoration: none; } .subtitle a:hover { text-decoration: underline; }
   .wrap { display: grid; grid-template-columns: 1fr; gap: 14px; }
-  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
-  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; align-items: end; }
-  label { font-size: 12px; color: #374151; display:block; margin-bottom: 6px; }
-  input[type="number"], select, input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #d1d5db; background: #fff; }
+  .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+  /* Base controls: stack on small screens */
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: end; }
+  label { font-size: 12px; color: #cbd5e1; display:block; margin-bottom: 6px; }
+  input[type="number"], select, input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: #e5e7eb; }
   #plot { width: 100%; height: 760px; }
-  .btn { padding: 12px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #f3f4f6; cursor: pointer; width: 100%; }
-  .btn:hover { background: #e5e7eb; }
+  .btn { padding: 12px 12px; border: 1px solid #334155; border-radius: 10px; background: #1f2937; color: #e5e7eb; cursor: pointer; width: 100%; }
+  .btn:hover { background: #334155; }
   .legend-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .key { display:inline-flex; align-items:center; gap:8px; font-size: 13px; color:#374151; }
-  .sq, .ci { width: 12px; height: 12px; display:inline-block; border:1.2px solid rgba(0,0,0,0.6); }
+  .key { display:inline-flex; align-items:center; gap:8px; font-size: 13px; color:#cbd5e1; }
+  .sq, .ci { width: 12px; height: 12px; display:inline-block; border:1.2px solid rgba(255,255,255,0.6); }
   .sq { background: var(--film); border-radius: 2px; }
   .ci { background: var(--tv); border-radius: 999px; }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Desktop: compact single row */
+  @media (min-width: 1024px) {
+    .controls { display: flex; flex-wrap: nowrap; gap: 16px; align-items: end; }
+    .ctl { flex: 0 0 auto; }
+    .controls .ctl select, .controls .ctl input { width: auto; } /* override base 100% */
+    .ctl-type select { width: 160px; }
+    .ctl-age select { width: 200px; }
+    .ctl-color select { width: 160px; }
+    .ctl-search input { width: 240px; }
+    .ctl-actions { width: 220px; }
+  }
+
+  @media (max-width: 900px) {
+    body { margin: 16px; }
+    #plot { height: 70vh; }
+  }
+  @media (max-width: 640px) {
+    body { margin: 12px; }
+    .card { padding: 12px; }
+    .btn-row { grid-template-columns: 1fr; }
+    #plot { height: 65vh; }
+  }
 </style>
 </head>
 <body>
@@ -32,14 +69,14 @@
 
   <div class="wrap">
     <div class="controls card">
-      <div>
+      <div class="ctl ctl-type">
         <label>Type</label>
         <select id="typeFilter" multiple size="2">
           <option value="Film">Film</option>
           <option value="TV">TV</option>
         </select>
       </div>
-      <div>
+      <div class="ctl ctl-age">
         <label>Age focus</label>
         <select id="ageFilter" multiple size="4">
           <option value="Kids">Kids</option>
@@ -48,11 +85,10 @@
           <option value="Adults">Adults</option>
         </select>
       </div>
-      <div>
-        <label><input id="showLabels" type="checkbox" checked/> Show labels (all)</label>
-        <label><input id="onlyBig" type="checkbox"/> Instead, label big divergences (≥20) or AIR≥4</label>
+      <div class="ctl ctl-labels">
+        <label><input id="showLabels" type="checkbox" checked/> Show labels</label>
       </div>
-      <div>
+      <div class="ctl ctl-color">
         <label>Color by</label>
         <select id="colorBy">
           <option value="Type" selected>Type (Film/TV)</option>
@@ -62,24 +98,18 @@
           <option value="Awards_Noms">Awards (Noms)</option>
         </select>
       </div>
-      <div>
+      <div class="ctl ctl-search">
         <label>Search title</label>
         <input id="searchTitle" type="text" placeholder="e.g., Spider-Man"/>
       </div>
-      <div>
+      <div class="ctl ctl-actions">
         <label>&nbsp;</label>
         <div class="btn-row">
           <button id="resetBtn" class="btn">Reset</button>
           <button id="downloadBtn" class="btn">Download PNG</button>
         </div>
       </div>
-      <div style="grid-column: 1 / -1;">
-        <div class="legend-row">
-          <span class="key"><span class="sq"></span> Film (square)</span>
-          <span class="key"><span class="ci"></span> TV (circle)</span>
-          <span style="font-size:12px;color:#6b7280;">Color = Type (default). Change via “Color by.” Size = # of AIR raters.</span>
-        </div>
-      </div>
+      <div class="ctl" style="flex:1;"></div> <!-- spacer to keep one line without wrap -->
     </div>
 
     <div id="plot" class="card"></div>
@@ -128,44 +158,38 @@
       }
     }
 
-    // Hard-wrap the summary to avoid wide hoverboxes; consistent width achieved with monospace hoverlabel font.
     function wrapText(txt, maxCharsPerLine=48, maxLines=4) {
       if (!txt) return '';
       const words = String(txt).split(/\s+/);
-      let lines = []; let cur = '';
-      for (let w of words) {
+      let lines = []; let cur = ''; let i = 0;
+      while (i < words.length) {
+        const w = words[i];
         if ((cur + ' ' + w).trim().length <= maxCharsPerLine) {
-          cur = (cur ? cur + ' ' : '') + w;
+          cur = (cur ? cur + ' ' : '') + w; i++;
         } else {
-          lines.push(cur); cur = w;
-          if (lines.length >= maxLines - 1) { break; }
+          lines.push(cur); cur = w; i++;
+          if (lines.length >= maxLines - 1) break;
         }
       }
-      const used = lines.join(' ').length + (lines.length ? 1 : 0) + cur.length;
-      const total = String(txt).length;
-      const trimmed = used < total;
-      lines.push(cur + (trimmed ? '…' : ''));
+      const remaining = words.slice(i).join(' ');
+      let last = cur + (remaining ? '…' : '');
+      lines.push(last);
       return lines.slice(0, maxLines).join('<br>');
     }
 
     function buildTrace(rows) {
       const showLabels = document.getElementById('showLabels').checked;
-      const onlyBig = document.getElementById('onlyBig').checked;
       const textArr = rows.map(d => d.Title);
-      const diverge = rows.map(d => Math.abs((d.RT_Critic||0)-(d.RT_Audience||0)));
       let text = new Array(rows.length).fill('');
       if (showLabels) {
-        for (let i=0;i<rows.length;i++) {
-          const big = diverge[i] >= 20 || (rows[i].AIR_Raters||0) >= 4;
-          text[i] = onlyBig ? (big ? textArr[i] : '') : textArr[i];
-        }
+        text = textArr;
       }
       const colorCfg = colorConfig(rows);
       const markerBase = {
         size: rows.map(d => (d.AIR_Raters||0) * 6 + 10),
         symbol: rows.map(d => symbolFor(d.Type)),
-        line: {width: 0.8, color: 'rgba(0,0,0,0.6)'},
-        opacity: 0.9
+        line: {width: 0.8, color: 'rgba(255,255,255,0.6)'},
+        opacity: 0.95
       };
       const marker = Object.assign(markerBase, colorCfg.marker || {});
 
@@ -175,7 +199,7 @@
         mode: showLabels ? 'markers+text' : 'markers',
         text: text,
         textposition: 'top center',
-        textfont: {size: 11},
+        textfont: {size: 11, color: '#e5e7eb'},
         cliponaxis: false,
         marker: marker,
         hovertemplate:
@@ -204,12 +228,12 @@
         mode: 'markers+text',
         text: hits.map(d => '★ ' + d.Title),
         textposition: 'top center',
-        textfont: {size: 13},
+        textfont: {size: 13, color: '#e5e7eb'},
         cliponaxis: false,
         marker: {
           size: hits.map(d => (d.AIR_Raters||0) * 8 + 20),
           symbol: hits.map(d => d.Type === 'Film' ? 'square' : 'circle'),
-          line: {width: 2, color: '#111'},
+          line: {width: 2, color: '#f8fafc'},
           color: '#d62728',
           opacity: 1.0
         },
@@ -235,22 +259,24 @@
       const data = highlight ? [base, highlight] : [base];
 
       const layout = {
-        xaxis: {title: 'Audience (Rotten Tomatoes %)', range: [38, 102], zeroline: false},
-        yaxis: {title: 'Critics (Rotten Tomatoes %)', range: [38, 102], zeroline: false},
+        xaxis: {title: 'Audience (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937'},
+        yaxis: {title: 'Critics (Rotten Tomatoes %)', range: [38, 102], zeroline: false, color: '#cbd5e1', gridcolor: '#1f2937'},
         margin: {l: 80, r: 60, t: 30, b: 60},
+        paper_bgcolor: '#111827',
+        plot_bgcolor: '#111827',
         shapes: [
-          {type: 'line', x0: 70, x1: 70, y0: 38, y1: 102, line: {dash: 'dot', width: 1}},
-          {type: 'line', x0: 38, x1: 102, y0: 70, y1: 70, line: {dash: 'dot', width: 1}}
+          {type: 'line', x0: 70, x1: 70, y0: 38, y1: 102, line: {dash: 'dot', width: 1, color: '#94a3b8'}},
+          {type: 'line', x0: 38, x1: 102, y0: 70, y1: 70, line: {dash: 'dot', width: 1, color: '#94a3b8'}}
         ],
         showlegend: false,
         hoverlabel: {
           align: 'left',
-          font: {family: 'ui-monospace, SFMono-Regular, Menlo, monospace', size: 12},
-          bgcolor: 'rgba(255,255,255,0.95)',
-          bordercolor: '#e5e7eb'
+          font: {family: 'ui-monospace, SFMono-Regular, Menlo, monospace', size: 13, color: '#F8FAFC'},
+          bgcolor: 'rgba(17,24,39,0.98)',
+          bordercolor: '#0ea5e9'
         }
       };
-      Plotly.react('plot', data, layout, {responsive: true});
+      Plotly.react('plot', data, layout, {responsive: true, displayModeBar: false});
     }
 
     function resetAll() {
@@ -259,7 +285,6 @@
         for (const opt of sel.options) opt.selected = true;
       }
       document.getElementById('showLabels').checked = true;
-      document.getElementById('onlyBig').checked = false;
       document.getElementById('colorBy').value = 'Type';
       document.getElementById('searchTitle').value = '';
       draw();
@@ -279,8 +304,14 @@
 
     // init
     resetAll();
+    if (window.innerWidth < 640) {
+      const show = document.getElementById('showLabels');
+      if (show) show.checked = false;
+      draw();
+    }
+
     // bind
-    for (const id of ['typeFilter','ageFilter','showLabels','onlyBig','colorBy','searchTitle']) {
+    for (const id of ['typeFilter','ageFilter','showLabels','colorBy','searchTitle']) {
       document.getElementById(id).addEventListener('input', draw);
       document.getElementById(id).addEventListener('change', draw);
     }
