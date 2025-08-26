@@ -1,8 +1,12 @@
-# AIR Data Explorer — v9.1 (Vercel fix)
-- Fix install error by using a valid @vercel/og version (^0.8.5)
-- Use `/api/og.tsx` (JSX) with Edge runtime
-- Add `tsconfig.json` with `jsx: react-jsx`
+
+# AIR Data Explorer — v9.2 (OG image without JSX/React)
+
+This version avoids React/JSX in Edge Functions to fix build errors.
+- `api/og.ts` uses plain element objects + `new ImageResponse(...)`
+- No `tsconfig.json` required
+- `@vercel/og` pinned to `^0.8.5`
 
 ## Deploy
-Import this repo in Vercel (Framework: Other). No build command needed.
-Test OG at `/api/og`. After first deploy, set absolute OG image URLs in `<head>` if desired.
+- Import this repo in Vercel (Framework: Other). No build command.
+- Test OG at `/api/og`.
+- Optionally set absolute OG image URLs in `index.html` after first deploy.
