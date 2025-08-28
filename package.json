@@ -1,8 +1,5 @@
 {
   "name": "air-explorer",
   "private": true,
-  "type": "module",
-  "dependencies": {
-    "@vercel/og": "^0.8.5"
-  }
+  "type": "module"
 }
